@@ -1,0 +1,48 @@
+server {
+  listen 80;
+  listen [::]:80;
+
+  server_name bensessenciaisdomicilio.pt;
+  
+  location /.well-known/acme-challenge/ {
+      root /var/www/certbot;
+  }
+
+  error_page 404 500 502 503 504 /custom_error.html;
+  location = /custom_error.html {
+          root /usr/share/nginx/html;
+          internal;
+  }
+
+  location / {
+      proxy_pass http://app/;
+      proxy_set_header Host               $host;
+      proxy_set_header X-Real-IP          $remote_addr;
+  }
+}
+
+server {
+  listen 443 ssl;
+  listen [::]:443;
+  
+  server_name bensessenciaisdomicilio.pt;
+
+  ssl_certificate /etc/ssl/certs/cert.pem;
+  ssl_certificate_key /etc/ssl/certs/priv.pem;
+
+  location /.well-known/acme-challenge/ {
+      root /var/www/certbot;
+  }
+
+  error_page 404 500 502 503 504 /custom_error.html;
+  location = /custom_error.html {
+          root /usr/share/nginx/html;
+          internal;
+  }
+
+  location / {
+      proxy_pass http://app/;
+      proxy_set_header Host               $host;
+      proxy_set_header X-Real-IP          $remote_addr;
+  }
+}
